@@ -28,7 +28,6 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 			public void run() {
 
 				try {
-
 					for (String userName : clientsHeartBeats.keySet()) {
 						clientsHeartBeats.replace(userName, clientsHeartBeats.get(userName) + 1);
 
@@ -98,26 +97,23 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 		// System.out.println("Heartbeat from [" + peer.getName() + "]");
 	}
 
-	public boolean peerExist(String name) throws RemoteException {
+	public boolean peerExist(String name) {
 		for (int i = 0; i < clients.size(); i++)
 			if (clients.get(i).getName().equals(name))
 				return true;
 		return false;
 	}
 
-	public IClient getClientWithFileHash(String hash, Peer client) throws RemoteException {
-
+	public Peer getClientWithFileHash(String hash, Peer client) {
+		System.out.println(" aki");
 		System.out.println(client.getName() + " need file " + hash);
-
 		for (int i = 0; i < clients.size(); i++) {
 			if (clients.get(i).haveFileByHash(hash)) {
 
-				IClient clientHostFile = clients.get(i);
-				clientHostFile.PrintMessage(client.getName() + " need file: " + hash);
-
+				Peer clientHostFile = clients.get(i);
 				System.out.println(clientHostFile.getName() + " have file: " + hash);
 
-				return (IClient) clientHostFile;
+				return clientHostFile;
 			}
 		}
 

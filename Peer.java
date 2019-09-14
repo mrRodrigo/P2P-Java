@@ -56,6 +56,15 @@ public class Peer implements Serializable {
     return null;
   }
 
+  public boolean haveFileByHash(String hash) {
+    for (String fileHash : files.keySet()) {
+      if (fileHash.equals(hash)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public String getName() {
     return name;
   }

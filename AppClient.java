@@ -38,6 +38,7 @@ public class AppClient {
 			do {
 
 				text = scan.nextLine();
+				commandController(text, server, mainPeer);
 
 			} while (!text.equalsIgnoreCase("exit"));
 
@@ -51,13 +52,31 @@ public class AppClient {
 
 	}
 
+	public static void commandController(String command, ServerInterface server, Peer thisPeer) throws RemoteException {
+		command = command.toLowerCase();
+		System.out.println(command);
+		String[] commands = command.split(" ");
+		System.out.println(commands);
+
+		switch (commands[0]) {
+		case "getFileHash":
+			System.out.println("aki");
+			System.out.println(server.getClientWithFileHash(commands[1], thisPeer));
+			break;
+
+		case "exist":
+			System.out.println(server.peerExist(commands[1]));
+			break;
+		}
+	}
+
 	public static void sendHeartBeat(ServerInterface server, Peer thisClient) {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			public void run() {
 				try {
 					server.reciveHeartBeat(thisClient);
-					System.out.print(".");
+					// System.out.print(".");
 
 				} catch (Exception e) {
 					System.out.print("HeartBeat falhou ao ser enviado");
