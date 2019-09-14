@@ -8,6 +8,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Map;
 import java.io.Serializable;
+import java.net.*;
+import java.io.*;
 
 public class Peer implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -21,6 +23,35 @@ public class Peer implements Serializable {
     address = args[2];
     files = new HashMap<String, String>();
     saveAllFilesPath("./share");
+  }
+
+  public void requestFile(String pathFile, Peer host) throws IOException {
+
+    Socket socket = new Socket(host.getAddress(), 4444);
+    DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+
+    // Send first message
+    dOut.writeByte(1);
+    dOut.writeUTF("This is the first type of message.");
+    dOut.flush(); // Send off the data
+
+    // Send the second message
+    dOut.writeByte(2);
+    dOut.writeUTF("This is the second type of message.");
+    dOut.flush(); // Send off the data
+
+    // Send the third message
+    dOut.writeByte(3);
+    dOut.writeUTF("This is the third type of message (Part 1).");
+    dOut.writeUTF("This is the third type of message (Part 2).");
+    dOut.flush(); // Send off the data
+
+    // Send the exit message
+    dOut.writeByte(-1);
+    dOut.flush();
+
+    dOut.close();
+
   }
 
   public void saveAllFilesPath(String rootPath) {

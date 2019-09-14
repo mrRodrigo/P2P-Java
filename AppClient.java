@@ -1,11 +1,15 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Scanner;
-
+import java.net.*;
+import java.io.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class AppClient {
+	public static final String CHECK_IF_EXIST_USER = "exist";
+	public static final String GET_USER_WITH_HASH = "getFileHash";
+
 	public static void main(String[] args) {
 		int result;
 
@@ -31,6 +35,8 @@ public class AppClient {
 
 			sendHeartBeat(server, mainPeer);
 
+			new Thread(openSocketServer).start();
+
 			String text = "";
 
 			Scanner scan = new Scanner(System.in);
@@ -52,19 +58,21 @@ public class AppClient {
 
 	}
 
-	public static void commandController(String command, ServerInterface server, Peer thisPeer) throws RemoteException {
-		command = command.toLowerCase();
-		System.out.println(command);
-		String[] commands = command.split(" ");
-		System.out.println(commands);
+	public static void commandController(String command, ServerInterface server, Peer thisPeer)
+			throws RemoteException, IOException {
+		String[] commands = command.toLowerCase().split(" ");
 
 		switch (commands[0]) {
-		case "getFileHash":
-			System.out.println("aki");
+
+		case "test":
+			thisPeer.requestFile("pathFile", thisPeer);
+			break;
+
+		case GET_USER_WITH_HASH:
 			System.out.println(server.getClientWithFileHash(commands[1], thisPeer));
 			break;
 
-		case "exist":
+		case CHECK_IF_EXIST_USER:
 			System.out.println(server.peerExist(commands[1]));
 			break;
 		}
@@ -85,4 +93,46 @@ public class AppClient {
 			}
 		}, 0, 1000);
 	}
+
+	private static Runnable openSocketServer = new Runnable() {
+		public void run() {
+
+			try {
+				ServerSocket server = null;
+
+				server = new ServerSocket(4444);
+				System.out.println("Socket Server created ");
+
+				Socket client = server.accept();
+
+				DataInputStream dIn = new DataInputStream(client.getInputStream());
+
+				boolean done = false;
+				while (!done) {
+					byte messageType = dIn.readByte();
+
+					switch (messageType) {
+					case 1: // Type A
+						System.out.println("Message A: " + dIn.readUTF());
+						break;
+					case 2: // Type B
+						System.out.println("Message B: " + dIn.readUTF());
+						break;
+					case 3: // Type C
+						System.out.println("Message C [1]: " + dIn.readUTF());
+						System.out.println("Message C [2]: " + dIn.readUTF());
+						break;
+					default:
+						done = true;
+					}
+				}
+
+				dIn.close();
+			} catch (IOException e) {
+				System.out.println("Erro ao criar socket server");
+				e.printStackTrace();
+			}
+
+		};
+	};
 }
