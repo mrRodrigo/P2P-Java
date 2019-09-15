@@ -9,7 +9,8 @@ import java.util.TimerTask;
 public class AppClient {
 	public static final String CHECK_IF_EXIST_USER = "exist";
 	public static final String GET_USER_WITH_HASH = "getFileHash";
-
+	public static final String GET_RESOURCES_LIST = "getResources";
+	
 	public static void main(String[] args) {
 		int result;
 
@@ -60,18 +61,29 @@ public class AppClient {
 
 	public static void commandController(String command, ServerInterface server, Peer thisPeer)
 			throws RemoteException, IOException {
-		String[] commands = command.toLowerCase().split(" ");
+		String[] commands = command.split(" ");
 
 		switch (commands[0]) {
 
 		case "test":
 			thisPeer.requestFile("pathFile", thisPeer);
-			break;
+			break;	
 
+		// solicitar recurso especifico
+		//getFileHash dc6444a370d16433b772d4b7860b110
 		case GET_USER_WITH_HASH:
-			System.out.println(server.getClientWithFileHash(commands[1], thisPeer));
+			System.out.println("Peer que possui arquivo: "+server.getClientWithFileHash(commands[1], thisPeer).getName());
 			break;
 
+		// solicitar lista de recursos
+		//getResources dc6444a370d16433b772d4b7860b110 dc6444a370d16433b772d4b7860b110
+		case GET_RESOURCES_LIST:
+			for(int i=1; i<commands.length; i++){
+				System.out.println("Peer que possui arquivo: "+server.getClientWithFileHash(commands[1], thisPeer).getName());
+			}
+			break;
+
+		// exist <client_name>
 		case CHECK_IF_EXIST_USER:
 			System.out.println(server.peerExist(commands[1]));
 			break;
