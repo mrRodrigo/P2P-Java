@@ -45,12 +45,9 @@ public class AppClient {
 
 			do {
 				/*
-					le comando do usuario:
-					-- exist <client_name>
-					-- getFileHash <file_hash>
-					-- getResources <file_1> <file_2> <...>
-					-- getFile <file>
-				*/ 
+				 * le comando do usuario: -- exist <client_name> -- getFileHash <file_hash> --
+				 * getResources <file_1> <file_2> <...> -- getFile <file>
+				 */
 				text = scan.nextLine();
 				commandController(text, server, mainPeer);
 
@@ -86,11 +83,11 @@ public class AppClient {
 			break;
 
 		// solicitar lista de recursos
-		// getResources dc6444a370d16433b772d4b7860b110 11b0d6e03c1c3e4e5bbacf902220ee1f
+		// getResources
 		case GET_RESOURCES_LIST:
-			for (int i = 1; i < commands.length; i++) {
-				System.out.println("Peer que possui arquivo: " + server.getClientWithFileHash(commands[1], thisPeer).getName());
-			}
+
+			System.out.println("Peer que possui arquivo: " + server.getAllFileHash());
+
 			break;
 
 		// verificar se usuario existe

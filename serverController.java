@@ -114,4 +114,16 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 
 		return null;
 	}
+
+	public String getAllFileHash() {
+		String result = "";
+		for (int i = 0; i < clients.size(); i++) {
+			result += clients.get(i).getName() + "\n";
+			for (String hash : clients.get(i).getFiles().keySet()) {
+				result += hash + " ";
+			}
+		}
+		return result;
+	}
+
 }

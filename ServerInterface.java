@@ -12,4 +12,6 @@ public interface ServerInterface extends Remote {
 	public boolean peerExist(String name) throws RemoteException;
 
 	public Peer getClientWithFileHash(String hash, Peer client) throws RemoteException;
+
+	public String getAllFileHash() throws RemoteException;
 }
