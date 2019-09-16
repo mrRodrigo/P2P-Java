@@ -20,7 +20,7 @@ public class Peer implements Serializable {
     name = args[1];
     address = args[2];
     files = new HashMap<String, String>();
-    saveAllFilesPath("./share");
+    saveAllFilesPath(args[3]); // "./share"
   }
 
   public void requestFile(String hashFile, Peer host) throws IOException {

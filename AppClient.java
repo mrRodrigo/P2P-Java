@@ -15,8 +15,8 @@ public class AppClient {
 	public static void main(String[] args) {
 
 		// valida quantidade de argumentos ao rodar o Client
-		if (args.length <= 2) {
-			System.out.println("Usage: java Client <machine> <client_name> <machine>");
+		if (args.length <= 3) {
+			System.out.println("Usage: java Client <machine> <client_name> <machine> <files_dir>");
 			System.exit(1);
 		}
 
