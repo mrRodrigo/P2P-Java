@@ -24,7 +24,7 @@ public class Peer implements Serializable {
   }
 
   public void requestFile(String hashFile, Peer host) throws IOException {
-    String pathFile = pathByHash(hashFile);
+    String pathFile = host.pathByHash(hashFile);
 
     Socket socket = new Socket(host.getAddress(), 4444);
     DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
