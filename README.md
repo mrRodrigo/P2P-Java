@@ -2,7 +2,7 @@
 
 Client 
 
-```java AppClient 127.0.0.1 client01 127.0.0.1 ```
+```java AppClient 127.0.0.1 client01 127.0.0.1 "./share" ```
 
 Server
 
