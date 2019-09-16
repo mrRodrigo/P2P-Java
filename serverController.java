@@ -105,7 +105,6 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 	}
 
 	public Peer getClientWithFileHash(String hash, Peer client) {
-		System.out.println(" aki");
 		System.out.println(client.getName() + " need file " + hash);
 		for (int i = 0; i < clients.size(); i++) {
 			if (clients.get(i).haveFileByHash(hash)) {

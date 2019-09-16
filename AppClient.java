@@ -10,7 +10,8 @@ public class AppClient {
 	public static final String CHECK_IF_EXIST_USER = "exist";
 	public static final String GET_USER_WITH_HASH = "getFileHash";
 	public static final String GET_RESOURCES_LIST = "getResources";
-	
+	public static final String GET_FILE_FROM_USER = "getFile";
+
 	public static void main(String[] args) {
 		int result;
 
@@ -65,21 +66,24 @@ public class AppClient {
 
 		switch (commands[0]) {
 
-		case "test":
-			thisPeer.requestFile("pathFile", thisPeer);
-			break;	
-
 		// solicitar recurso especifico
-		//getFileHash dc6444a370d16433b772d4b7860b110
+		// getFile dc6444a370d16433b772d4b7860b110
+		case GET_FILE_FROM_USER:
+			Peer peerWithFile = server.getClientWithFileHash(commands[1], thisPeer);
+			thisPeer.requestFile(commands[1], peerWithFile);
+			break;
+
+		// saber quem tem recurso especifico
+		// getFileHash dc6444a370d16433b772d4b7860b110
 		case GET_USER_WITH_HASH:
-			System.out.println("Peer que possui arquivo: "+server.getClientWithFileHash(commands[1], thisPeer).getName());
+			System.out.println("Peer que possui arquivo: " + server.getClientWithFileHash(commands[1], thisPeer).getName());
 			break;
 
 		// solicitar lista de recursos
-		//getResources dc6444a370d16433b772d4b7860b110 dc6444a370d16433b772d4b7860b110
+		// getResources dc6444a370d16433b772d4b7860b110 dc6444a370d16433b772d4b7860b110
 		case GET_RESOURCES_LIST:
-			for(int i=1; i<commands.length; i++){
-				System.out.println("Peer que possui arquivo: "+server.getClientWithFileHash(commands[1], thisPeer).getName());
+			for (int i = 1; i < commands.length; i++) {
+				System.out.println("Peer que possui arquivo: " + server.getClientWithFileHash(commands[1], thisPeer).getName());
 			}
 			break;
 
@@ -115,31 +119,70 @@ public class AppClient {
 				server = new ServerSocket(4444);
 				System.out.println("Socket Server created ");
 
-				Socket client = server.accept();
-
-				DataInputStream dIn = new DataInputStream(client.getInputStream());
-
 				boolean done = false;
+
+				// para toda mensagem que este peer receber via socket
 				while (!done) {
-					byte messageType = dIn.readByte();
+					Socket client = server.accept(); // quem envio a mensagem
+					DataInputStream dIn = new DataInputStream(client.getInputStream());
+					byte messageType = dIn.readByte(); // lê o conteúdo da mensagem
 
 					switch (messageType) {
-					case 1: // Type A
-						System.out.println("Message A: " + dIn.readUTF());
+					case 1: // se o conteudo é apenas o byte que representa 1, Recebeu uma solicitação de
+									// arquivo
+						String fileToSend = dIn.readUTF();
+						System.out.println("Arquivo solicitado: " + fileToSend);
+
+						// cria objeto resposta com o cliente solicitante
+						try {
+
+							// aqui funciona tudo maravilhosamente bem
+							Socket peerServer = new Socket(client.getInetAddress(), 4444);
+
+							DataOutputStream dOut = new DataOutputStream(peerServer.getOutputStream());
+
+							FileInputStream fis = new FileInputStream(fileToSend);
+							byte[] buffer = new byte[4096];
+							int count;
+							while ((count = fis.read(buffer)) > 0) {
+								dOut.write(buffer, 0, count);
+							}
+
+							fis.close();
+							dOut.close();
+
+						} catch (Exception e) {
+							System.out.println("Erro ao enviar arquivo ao solicitante");
+							e.printStackTrace();
+						}
 						break;
-					case 2: // Type B
-						System.out.println("Message B: " + dIn.readUTF());
+					default: // se não é 1, então esta recebendo um arquivo
+						System.out.println("arquivo recebido");
+
+						DataInputStream dis = new DataInputStream(client.getInputStream());
+						FileOutputStream fos = new FileOutputStream("recebido.txt");
+						byte[] buffer = new byte[4096];
+
+						// daqui pra baixo é bruxaria
+						int filesize = 15123;
+
+						int read = 0;
+						int totalRead = 0;
+						int remaining = filesize;
+						while ((read = dis.read(buffer)) > 0) {
+							totalRead += read;
+							System.out.println("read " + totalRead + " bytes.");
+							fos.write(buffer, 0, read);
+						}
+
+						fos.close();
+						dis.close();
 						break;
-					case 3: // Type C
-						System.out.println("Message C [1]: " + dIn.readUTF());
-						System.out.println("Message C [2]: " + dIn.readUTF());
-						break;
-					default:
-						done = true;
 					}
+					client.close();
+					dIn.close();
 				}
 
-				dIn.close();
 			} catch (IOException e) {
 				System.out.println("Erro ao criar socket server");
 				e.printStackTrace();

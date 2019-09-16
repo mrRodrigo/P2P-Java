@@ -25,30 +25,21 @@ public class Peer implements Serializable {
     saveAllFilesPath("./share");
   }
 
-  public void requestFile(String pathFile, Peer host) throws IOException {
+  public void requestFile(String hashFile, Peer host) throws IOException {
+    String pathFile = pathByHash(hashFile);
 
     Socket socket = new Socket(host.getAddress(), 4444);
     DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
 
-    // Send first message
+    // escreve 1, para dizer que é uma requisição de arquivo
     dOut.writeByte(1);
-    dOut.writeUTF("This is the first type of message.");
+    // escreve o caminho do arquivo que quero
+    dOut.writeUTF(pathFile);
     dOut.flush(); // Send off the data
 
-    // Send the second message
-    dOut.writeByte(2);
-    dOut.writeUTF("This is the second type of message.");
-    dOut.flush(); // Send off the data
-
-    // Send the third message
-    dOut.writeByte(3);
-    dOut.writeUTF("This is the third type of message (Part 1).");
-    dOut.writeUTF("This is the third type of message (Part 2).");
-    dOut.flush(); // Send off the data
-
-    // Send the exit message
+    // encerra
     dOut.writeByte(-1);
-    dOut.flush();
+    dOut.flush(); // Send off the data
 
     dOut.close();
 
@@ -94,6 +85,15 @@ public class Peer implements Serializable {
       }
     }
     return false;
+  }
+
+  public String pathByHash(String hash) {
+    for (String fileHash : files.keySet()) {
+      if (fileHash.equals(hash)) {
+        return files.get(fileHash);
+      }
+    }
+    return null;
   }
 
   public String getName() {
