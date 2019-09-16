@@ -1,7 +1,5 @@
-
 import java.util.HashMap;
 import java.nio.file.*;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.stream.Stream;
 import java.math.BigInteger;
@@ -14,8 +12,8 @@ import java.io.*;
 public class Peer implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public String name;// client name
-  public String address;// client name
+  public String name; // client name
+  public String address; // client address
   public HashMap<String, String> files; // array for all hash and path files
 
   public Peer(String[] args) {
@@ -46,7 +44,7 @@ public class Peer implements Serializable {
   }
 
   public void saveAllFilesPath(String rootPath) {
-    System.out.println("Reading yours files to share...");
+    System.out.println("Reading your files to share...");
     try (Stream<Path> paths = Files.walk(Paths.get(rootPath))) {
 
       paths.forEach(filePath -> {

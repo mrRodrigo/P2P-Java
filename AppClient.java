@@ -13,10 +13,10 @@ public class AppClient {
 	public static final String GET_FILE_FROM_USER = "getFile";
 
 	public static void main(String[] args) {
-		int result;
 
+		// valida quantidade de argumentos ao rodar o Client
 		if (args.length <= 2) {
-			System.out.println("Usage: java Client <machine>");
+			System.out.println("Usage: java Client <machine> <client_name> <machine>");
 			System.exit(1);
 		}
 
@@ -44,7 +44,13 @@ public class AppClient {
 			Scanner scan = new Scanner(System.in);
 
 			do {
-
+				/*
+					le comando do usuario:
+					-- exist <client_name>
+					-- getFileHash <file_hash>
+					-- getResources <file_1> <file_2> <...>
+					-- getFile <file>
+				*/ 
 				text = scan.nextLine();
 				commandController(text, server, mainPeer);
 
@@ -80,13 +86,14 @@ public class AppClient {
 			break;
 
 		// solicitar lista de recursos
-		// getResources dc6444a370d16433b772d4b7860b110 dc6444a370d16433b772d4b7860b110
+		// getResources dc6444a370d16433b772d4b7860b110 11b0d6e03c1c3e4e5bbacf902220ee1f
 		case GET_RESOURCES_LIST:
 			for (int i = 1; i < commands.length; i++) {
 				System.out.println("Peer que possui arquivo: " + server.getClientWithFileHash(commands[1], thisPeer).getName());
 			}
 			break;
 
+		// verificar se usuario existe
 		// exist <client_name>
 		case CHECK_IF_EXIST_USER:
 			System.out.println(server.peerExist(commands[1]));
@@ -99,9 +106,7 @@ public class AppClient {
 		timer.schedule(new TimerTask() {
 			public void run() {
 				try {
-					server.reciveHeartBeat(thisClient);
-					// System.out.print(".");
-
+					server.receiveHeartBeat(thisClient);
 				} catch (Exception e) {
 					System.out.print("HeartBeat falhou ao ser enviado");
 					e.printStackTrace();
@@ -163,15 +168,11 @@ public class AppClient {
 						FileOutputStream fos = new FileOutputStream("recebido.txt");
 						byte[] buffer = new byte[4096];
 
-						// daqui pra baixo é bruxaria
-						int filesize = 15123;
-
 						int read = 0;
 						int totalRead = 0;
-						int remaining = filesize;
 						while ((read = dis.read(buffer)) > 0) {
 							totalRead += read;
-							System.out.println("read " + totalRead + " bytes.");
+							System.out.println("Read " + totalRead + " bytes.");
 							fos.write(buffer, 0, read);
 						}
 
@@ -187,7 +188,6 @@ public class AppClient {
 				System.out.println("Erro ao criar socket server");
 				e.printStackTrace();
 			}
-
 		};
 	};
 }

@@ -1,11 +1,7 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.rmi.registry.LocateRegistry;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,7 +17,7 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 
 	}
 
-	// increment timeout for each client
+	// Incrementa timeout para cada cliente
 	private void incrementTimeOut() {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -49,10 +45,10 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 		if (peerExist(peer.getName())) {
 			return false;
 		}
-		// Add in array of clients
+		// Add no array de clientes
 		clients.add(peer);
 
-		// Init timeout counter for this client
+		// Inicializa contador de timeout para esse cliente
 		clientsHeartBeats.put(peer.getName(), 0);
 
 		System.out.println("Client [" + peer.getName() + "] connected with files: " + peer.getFiles());
@@ -63,7 +59,7 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 	public void Remove(Peer peer) {
 		clients.remove(peer);
 		clientsHeartBeats.remove(peer.getName());
-		System.out.println("Removido [" + peer.getName() + "]");
+		System.out.println("Peer [" + peer.getName() + "] removed");
 	}
 
 	public void Remove(String peer, Boolean timeout) {
@@ -78,16 +74,16 @@ public class serverController extends UnicastRemoteObject implements ServerInter
 			clients.remove(removeIndex);
 			clientsHeartBeats.remove(peer);
 			if (timeout) {
-				System.out.println("Removido [" + peer + "] por timeout");
+				System.out.println("Peer [" + peer + "] removed for timeout");
 				return;
 			}
-			System.out.println("Removido [" + peer + "]");
+			System.out.println("Peer [" + peer + "] removed");
 		} else {
-			System.out.println("Não foi possivel remover [" + peer + "]");
+			System.out.println("Couldn't remove peer [" + peer + "]");
 		}
 	}
 
-	public void reciveHeartBeat(Peer peer) throws RemoteException {
+	public void receiveHeartBeat(Peer peer) throws RemoteException {
 		for (int i = 0; i < clients.size(); i++) {
 			if (clients.get(i).getName().equals(peer.getName())) {
 				String clientName = clients.get(i).getName();

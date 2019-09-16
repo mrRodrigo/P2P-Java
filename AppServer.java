@@ -1,11 +1,11 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class AppServer {
 	public static void main(String[] args) throws RemoteException {
+
+		// valida quantidade de argumentos ao rodar o Server
 		if (args.length != 1) {
 			System.out.println("Usage: java Server <machine>");
 			System.exit(1);
@@ -24,7 +24,7 @@ public class AppServer {
 			Naming.rebind("P2P", new serverController());
 			System.out.println("Addition Server is ready.");
 		} catch (Exception e) {
-			System.out.println("Addition Serverfailed: " + e);
+			System.out.println("Addition Server failed: " + e);
 		}
 	}
 
